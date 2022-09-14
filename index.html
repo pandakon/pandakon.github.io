@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tools</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+</head>
+<style>
+    label {
+        padding-right: 2vw;
+    }
+</style>
+
+<body>
+    <div class="box">
+        <label class="checkbox">
+            <input type="checkbox" value="number"><span>数字</span>
+        </label>
+        <label class="checkbox"><input type="checkbox" value="small" checked><span>小写字母</span></label>
+        <label class="checkbox"><input type="checkbox" value="big"><span>大写字母</span></label>
+        <label class="checkbox"><input type="checkbox" value="symbol"><span>符号</span></label>
+        <label class="checkbox"><input type="checkbox" id="repeatInput" value="repeat"><span>是否可重复</span></label>
+    </div>
+    <div class="box">
+        长度<input id="len" style="display:inline-block;width: 50%;height: 1.5rem;margin-left: 0.2rem;" class="input" type="number" placeholder="" value="8">
+    </div>
+    <div class="box">
+    <button class="button is-fullwidth  is-primary" id="random">生成随机</button>
+    </div>
+    <div class="box" id="res" style="display:none;">
+        <div class="control">
+            <input id="resInput" class="input" type="text" value="" readonly>
+          </div>
+    </div>
+</body>
+<script type="text/javascript">
+    document.getElementById('random').onclick = function() {
+        var list = document.getElementsByTagName("input");
+        var values = [];
+        var len = 8;
+        for(var i = 0; i < list.length; i++) {
+            if (list[i].checked){
+                values.push(list[i].value)
+            }else if(list[i].id === 'len'){
+                len = list[i].value
+            }
+        }
+        
+        var pool = [];
+        var repeatable = false;
+        
+        values.forEach((v) => {
+            if (v === 'number'){
+                pool = pool.concat(new Array(10).fill(null).map((v, i) => i))
+            } else if(v === 'small'){
+                pool = pool.concat(new Array(26).fill(null).map((v, i) => String.fromCharCode(97 + i)))
+            } else if(v === 'big'){
+                pool = pool.concat(new Array(26).fill(null).map((v, i) => String.fromCharCode(65 + i)))
+            } else if(v === 'symbol'){
+                pool.push('!','@','#')
+            } else if(v === 'repeat'){
+                repeatable = true
+            }
+        })
+        
+        if (values.length === 0){
+            return;
+        }
+        if (values.length < len){
+            repeatable = true
+            document.getElementById('repeatInput').checked = true
+        }
+
+        var tmp = [];
+        var random;
+        for(var i=0;i<len;i++){
+            random = Math.floor(Math.random()*(pool.length));
+            if(tmp.indexOf(pool[random]) === -1 || repeatable){
+                tmp.push(pool[random])
+            }else{
+                i--;
+            }           
+        }
+        document.getElementById('resInput').value = tmp.join('')
+        document.getElementById('res').style.display='block'
+    }
+
+    document.getElementById('res').onclick = function () {
+        document.getElementById('resInput').select()
+        document.execCommand("Copy");
+        alert('已复制');
+    }
+</script>
+</html>
